@@ -65,9 +65,9 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
             f.close()
         return design_folder, fpath
 
-    def simulate(self, fpath):
-
-        command = "ngspice -b %s -f" % (fpath)
+    def simulate(self, design_folder):
+        command = "cd %s" % (design_folder)
+        command = "ngspice -b *.cir"
         os.system(command)
 
 
@@ -75,7 +75,7 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
     def create_design_and_simulate(self, state):
         dsn_name = self.get_design_name(state)
         design_folder, fpath = self.create_design(state)
-        self.simulate(fpath)
+        self.simulate(design_folder)
         result = self.get_rewards(design_folder)
         return state, result
 
@@ -174,7 +174,7 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
 def generate_random_state (len):
     states = []
     for _ in range(len):
-        vbias = random.random() * 0.7 + 0.3
+        vbias = random.random() * 1.8
         nf = int(random.random() * (100 - 10) + 10)
         rload = random.random() * (1000 - 10) + 10
         cload = random.random() * (1e-12 - 1e-15) + 1e-15
@@ -197,10 +197,10 @@ if __name__ == '__main__':
                       design_netlist=dsn_netlist,
                       target_specs=target_spec)
     # states = generate_random_state(num_designs)
-    states = [{'vbias': 0.45,
-               'mul': 86,
-               'rload': 800,
-               'cload': 6.6e-13}]
+    states = [{'vbias': 0.7,
+               'mul': 12,
+               'rload': 400,
+               'cload': 50e-13}]
 
     start_time = time.time()
     results = cs_env.run(states)
