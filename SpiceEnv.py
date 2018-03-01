@@ -74,6 +74,8 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
 
     def simulate(self, fpath):
         command = "ngspice -b %s" %fpath
+        #print("command",command)
+        #os.system("cat %s" %fpath)
         os.system(command)
 
     def create_design_and_simulate(self, state):
@@ -187,19 +189,19 @@ def generate_random_state (len):
 
 if __name__ == '__main__':
 
-    num_process = 1
-    num_designs = 1
+    num_process = 10
+    num_designs = 100
     dsn_netlist = './cs_amp.cir'
     target_spec = dict(gain_min=3.5, bw_min=1e9)
 
     cs_env = SpiceEnv(num_process=num_process,
                       design_netlist=dsn_netlist,
                       target_specs=target_spec)
-    # states = generate_random_state(num_designs)
-    states = [{'vbias': 0.7,
-               'mul': 12,
-               'rload': 400,
-               'cload': 50e-13}]
+    states = generate_random_state(num_designs)
+    #states = [{'vbias': 0.7,
+    #           'mul': 12,
+    #           'rload': 400,
+    #           'cload': 50e-13}]
 
     start_time = time.time()
     results = cs_env.run(states)
