@@ -117,8 +117,8 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
             reward = 1
             terminate = True
         else:
-            reward = - (abs(bw - bw_min) / bw_min + abs(gain - gain_min) / gain_min) * Ibias
-
+            reward = - (abs(bw - bw_min) / bw_min + abs(gain - gain_min) / gain_min)
+            
         # print('bw', bw)
         # print('gain', gain)
         # print ('Ibias', Ibias)
@@ -207,5 +207,11 @@ if __name__ == '__main__':
     results = cs_env.run(states)
     end_time = time.time()
 
-    pprint.pprint(results)
+    #pprint.pprint(results)
     print("time for num_process=%d, num_designs=%d : %f" % (num_process, num_designs, end_time - start_time))
+    
+    for result in results:
+        reward = result[1][0]
+        if reward == 1:
+            print(result[0]
+            print(result[1][2])
