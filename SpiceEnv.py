@@ -10,7 +10,7 @@ import random
 import time
 import pprint
 
-class SpiceEnv(object, metaclass=abc.ABCMeta):
+class SpiceEnv(object):
 
     def __init__(self, num_process, design_netlist, target_specs=None):
 
@@ -91,10 +91,6 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
         arg_list = [(state) for state in states]
         results = pool.map(self.create_design_and_simulate, arg_list)
         return results
-
-    # @abc.abstractmethod
-    # def get_rewards(self, output_path):
-    #     pass
 
     def get_rewards(self, output_path):
         """
