@@ -113,9 +113,9 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
         else:
             reward = - (abs(bw - bw_min) / bw_min + abs(gain - gain_min) / gain_min) * Ibias
 
-        print('bw', bw)
-        print('gain', gain)
-        print ('Ibias', Ibias)
+        # print('bw', bw)
+        # print('gain', gain)
+        # print ('Ibias', Ibias)
 
         spec = dict(
             bw=bw,
@@ -134,14 +134,9 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
 
         ac_raw_outputs = np.genfromtxt(ac_fname, skip_header=1)
         dc_raw_outputs = np.genfromtxt(dc_fname, skip_header=1)
-        print (dc_raw_outputs)
         freq = ac_raw_outputs[:, 0]
         vout = ac_raw_outputs[:, 1]
         ibias = -dc_raw_outputs[1]
-
-        print(freq.shape)
-        print(vout.shape)
-        print(ibias)
 
         return freq, vout, ibias
 
@@ -188,19 +183,19 @@ def generate_random_state (len):
 
 if __name__ == '__main__':
 
-    num_process = 3
-    num_designs = 3
+    num_process = 10
+    num_designs = 10
     dsn_netlist = './cs_amp.cir'
     target_spec = dict(gain_min=3.5, bw_min=1e9)
 
     cs_env = SpiceEnv(num_process=num_process,
                       design_netlist=dsn_netlist,
                       target_specs=target_spec)
-    # states = generate_random_state(num_designs)
-    states = [{'vbias': 0.7,
-               'mul': 12,
-               'rload': 400,
-               'cload': 50e-13}]
+    states = generate_random_state(num_designs)
+    # states = [{'vbias': 0.7,
+    #            'mul': 12,
+    #            'rload': 400,
+    #            'cload': 50e-13}]
 
     start_time = time.time()
     results = cs_env.run(states)
