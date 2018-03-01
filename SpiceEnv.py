@@ -72,16 +72,14 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
             f.close()
         return design_folder, fpath
 
-    def simulate(self, design_folder):
-        command = "ngspice -b *.cir"
+    def simulate(self, fpath):
+        command = "ngspice -b %s" %fpath
         os.system(command)
-
-
 
     def create_design_and_simulate(self, state):
         dsn_name = self.get_design_name(state)
         design_folder, fpath = self.create_design(state)
-        self.simulate(design_folder)
+        self.simulate(fpath)
         result = self.get_rewards(design_folder)
         return state, result
 
