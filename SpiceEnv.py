@@ -17,7 +17,7 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
         _, dsg_netlist_fname = os.path.split(design_netlist)
         self.base_design_name = os.path.splitext(dsg_netlist_fname)[0]
         self.num_process = num_process
-        self.base_tmp_dir = "/tmp/circuit_drl"
+        self.base_tmp_dir = os.path.abspath("/tmp/circuit_drl")
         self.gen_dir = os.path.join(self.base_tmp_dir, "designs_" + self.base_design_name)
 
         if not os.path.exists(self.base_tmp_dir):
@@ -47,9 +47,9 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
 
         fpath = os.path.join(design_folder, new_fname + '.cir')
 
-        if os.path.exists(fpath):
-            print ("design already exists, no need to generate one. skipping create_design() ...")
-            return fpath
+        # if os.path.exists(fpath):
+        #     print ("design already exists, no need to generate one. skipping create_design() ...")
+        #     return fpath
 
         lines = copy.deepcopy(self.tmp_lines)
         for line_num, line in enumerate(lines):
@@ -60,13 +60,19 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
                     if found:
                         new_replacement = "%s=%s" % (key, str(value))
                         lines[line_num] = lines[line_num].replace(found.group(0), new_replacement)
+            if 'wrdata' in line:
+                regex = re.compile("wrdata\s*(\w+\.\w+)\s*")
+                found = regex.search(line)
+                if found :
+                    replacement = os.path.join(design_folder, found.group(1))
+                    lines[line_num] = lines[line_num].replace(found.group(1), replacement)
+
         with open(fpath, 'w') as f:
             f.writelines(lines)
             f.close()
         return design_folder, fpath
 
     def simulate(self, design_folder):
-        os.chdir(design_folder)
         command = "ngspice -b *.cir"
         os.system(command)
 
@@ -183,19 +189,19 @@ def generate_random_state (len):
 
 if __name__ == '__main__':
 
-    num_process = 10
-    num_designs = 10
+    num_process = 1
+    num_designs = 1
     dsn_netlist = './cs_amp.cir'
     target_spec = dict(gain_min=3.5, bw_min=1e9)
 
     cs_env = SpiceEnv(num_process=num_process,
                       design_netlist=dsn_netlist,
                       target_specs=target_spec)
-    states = generate_random_state(num_designs)
-    # states = [{'vbias': 0.7,
-    #            'mul': 12,
-    #            'rload': 400,
-    #            'cload': 50e-13}]
+    # states = generate_random_state(num_designs)
+    states = [{'vbias': 0.7,
+               'mul': 12,
+               'rload': 400,
+               'cload': 50e-13}]
 
     start_time = time.time()
     results = cs_env.run(states)
