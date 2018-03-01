@@ -176,7 +176,7 @@ def generate_random_state (len):
     states = []
     for _ in range(len):
         vbias = random.random() * 1.8
-        nf = int(random.random() * (100 - 10) + 10)
+        nf = int(random.random() * (100 - 1) + 1)
         rload = random.random() * (1000 - 10) + 10
         cload = random.random() * (1e-12 - 1e-15) + 1e-15
         states.append(dict(
@@ -213,5 +213,5 @@ if __name__ == '__main__':
     for result in results:
         reward = result[1][0]
         if reward == 1:
-            print(result[0]
+            print(result[0])
             print(result[1][2])
