@@ -66,8 +66,7 @@ class SpiceEnv(object, metaclass=abc.ABCMeta):
         return design_folder, fpath
 
     def simulate(self, design_folder):
-        command = "cd %s" % (design_folder)
-        os.system(command)
+        os.chdir(design_folder)
         command = "ngspice -b *.cir"
         os.system(command)
 
